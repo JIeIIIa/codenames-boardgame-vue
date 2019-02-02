@@ -1,0 +1,20 @@
+language: java
+sudo: required
+
+jdk:
+  - oraclejdk8
+
+before_install:
+  - chmod +x mvnw
+
+script:
+  - mvn clean install coveralls:report -B
+
+after_script:
+  - echo "Script finished"
+
+after_success:
+  - echo "Build was successful. $TRAVIS_TEST_RESULT"
+
+after_failure:
+  - echo "Build was failed"
