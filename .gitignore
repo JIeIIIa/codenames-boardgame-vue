@@ -30,3 +30,18 @@
 *.jar
 *.war
 *.ear
+
+# Log files
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+/backend/src/main/resources/public/
+/backend/target
+/frontend/.DS_Store
+/frontend/dist/
+/frontend/node/
+/frontend/node_modules/
+/frontend/target
+/frontend/test-output
+/security/target/
