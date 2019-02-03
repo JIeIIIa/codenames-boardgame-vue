@@ -4,8 +4,25 @@ sudo: required
 jdk:
   - oraclejdk8
 
+services:
+  - postgresql
+
+addons:
+  postgresql: "9.6"
+
+env:
+  global:
+    - PGPORT=5432
+    - PGHOST=localhost
+
 before_install:
   - chmod +x mvnw
+  - sudo service postgresql restart
+  - sleep 1
+
+before_script:
+  - sudo psql -c "CREATE DATABASE codenames_test;" -U postgres
+  - sudo -u postgres psql -c "ALTER ROLE postgres WITH password 'password'"
 
 script:
   - mvn clean install coveralls:report -B
