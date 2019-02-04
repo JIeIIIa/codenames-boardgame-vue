@@ -1,5 +1,6 @@
 package com.gmail.onishchenko.oleksii.codenames.service;
 
+import com.gmail.onishchenko.oleksii.codenames.dto.CardDto;
 import com.gmail.onishchenko.oleksii.codenames.dto.RoomDto;
 import com.gmail.onishchenko.oleksii.codenames.entity.*;
 import com.gmail.onishchenko.oleksii.codenames.exception.CardNotFoundException;
@@ -108,12 +109,23 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void selectWord(Long roomId, Long cardId) {
+    public CardDto selectCard(Long roomId, Long cardId) {
         Room room = roomJpaRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Room with id = " + roomId + " not found"));
         Card card = room.getCards().stream().filter(c -> c.getId().equals(cardId)).findFirst()
                 .orElseThrow(() -> new CardNotFoundException("Card with id = " + cardId + " not found"));
         card.setSelected(true);
+
+        return CardDto.toDto(card);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<CardDto> retrieveCards(Long roomId) {
+        return roomJpaRepository.findById(roomId)
+                .map(Room::getCards)
+                .map(cards -> cards.stream().map(CardDto::toDto).collect(Collectors.toList()))
+                .orElseThrow(() -> new RoomNotFoundException("Room with id = " + roomId + " not found"));
     }
 
     List<Role> generateRoles() {

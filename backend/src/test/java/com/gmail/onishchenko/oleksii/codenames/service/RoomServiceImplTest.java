@@ -1,5 +1,6 @@
 package com.gmail.onishchenko.oleksii.codenames.service;
 
+import com.gmail.onishchenko.oleksii.codenames.dto.CardDto;
 import com.gmail.onishchenko.oleksii.codenames.dto.RoomDto;
 import com.gmail.onishchenko.oleksii.codenames.entity.*;
 import com.gmail.onishchenko.oleksii.codenames.exception.CardNotFoundException;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
+import static com.gmail.onishchenko.oleksii.codenames.dto.CardDto.toDto;
 import static com.gmail.onishchenko.oleksii.codenames.service.RoomServiceImpl.*;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -196,14 +198,14 @@ class RoomServiceImplTest {
     }
 
     @Nested
-    class SelectWord {
+    class SelectCard {
         @Test
         void roomNotFound() {
             //Given
             when(roomJpaRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
             //When
-            assertThrows(RoomNotFoundException.class, () -> roomService.selectWord(7L, 3L));
+            assertThrows(RoomNotFoundException.class, () -> roomService.selectCard(7L, 3L));
 
             //Then
             verify(roomJpaRepository, times(1)).findById(eq(7L));
@@ -225,7 +227,7 @@ class RoomServiceImplTest {
             when(roomJpaRepository.findById(7L)).thenReturn(Optional.of(room));
 
             //When
-            assertThrows(CardNotFoundException.class, () -> roomService.selectWord(7L, 33L));
+            assertThrows(CardNotFoundException.class, () -> roomService.selectCard(7L, 33L));
 
             //Then
             verify(roomJpaRepository, times(1)).findById(eq(7L));
@@ -239,21 +241,88 @@ class RoomServiceImplTest {
             Room room = new Room();
             List<Card> cards = LongStream.rangeClosed(1, CARDS_COUNT).boxed()
                     .map(i -> CardBuilder.getInstance()
-                            .id(i).word("word" + i).selected(false)
+                            .id(i).word("word" + i).selected(false).role(Role.CIVILIAN).cover((int) (2*i))
                             .build()
                     )
                     .peek(room::addCard)
                     .collect(Collectors.toList());
+            CardDto expected = new CardDto();
+            expected.setId(3L);
+            expected.setWord("word3");
+            expected.setSelected(true);
+            expected.setRole(Role.CIVILIAN);
+            expected.setCover(6);
 
             when(roomJpaRepository.findById(7L)).thenReturn(Optional.of(room));
 
             //When
-            roomService.selectWord(7L, 3L);
+            CardDto result = roomService.selectCard(7L, 3L);
 
             //Then
+            assertThat(result).isEqualTo(expected);
             assertThat(room.getCards()).filteredOn(c -> c.getId() == 3L && c.getSelected()).hasSize(1);
             assertThat(room.getCards()).filteredOn(c -> c.getId() != 3L && !c.getSelected()).hasSize(CARDS_COUNT - 1);
             verify(roomJpaRepository, times(1)).findById(eq(7L));
+            verifyNoMoreInteractions(roomJpaRepository, wordService);
+        }
+    }
+
+    @Nested
+    class RetrieveCards {
+        @Test
+        void roomNotFound() {
+            //Given
+            final long roomId = 7L;
+            when(roomJpaRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+            //When
+            assertThrows(RoomNotFoundException.class, () -> roomService.retrieveCards(roomId));
+
+            //Then
+            verify(roomJpaRepository, times(1)).findById(eq(roomId));
+            verifyNoMoreInteractions(roomJpaRepository, wordService);
+        }
+
+        @Test
+        void roomHasNoWord() {
+            //Given
+            final long roomId = 7L;
+            Room room = new Room("qwerty", "password");
+            room.setId(roomId);
+
+            when(roomJpaRepository.findById(roomId)).thenReturn(Optional.of(room));
+
+
+            //When
+            List<CardDto> result = roomService.retrieveCards(roomId);
+
+            //Then
+            assertThat(result).hasSize(0);
+            verify(roomJpaRepository, times(1)).findById(eq(roomId));
+            verifyNoMoreInteractions(roomJpaRepository, wordService);
+        }
+
+        @Test
+        void success() {
+            //Given
+            final long roomId = 7L;
+            Room room = new Room("qwerty", "password");
+            room.setId(roomId);
+            List<Card> cards = asList(
+                    CardBuilder.getInstance().id(101L).word("word_1").role(Role.RED).cover(2).room(room).build(),
+                    CardBuilder.getInstance().id(202L).word("word_2").role(Role.BLUE).cover(4).room(room).build()
+            );
+            room.setCards(cards);
+            CardDto[] expected = {toDto(cards.get(0)), toDto(cards.get(1))};
+            when(roomJpaRepository.findById(roomId)).thenReturn(Optional.of(room));
+
+
+            //When
+            List<CardDto> result = roomService.retrieveCards(roomId);
+
+            //Then
+            assertThat(result).hasSize(2).containsOnlyOnce(expected);
+            verify(roomJpaRepository, times(1)).findById(eq(roomId));
             verifyNoMoreInteractions(roomJpaRepository, wordService);
         }
     }

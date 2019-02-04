@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <word content="word_1"/>
+    <word content="word_2"/>
+    <word content="word_3"/>
+    <word content="word_4"/>
+    <word content="word_5"/>
+    <word content="word_6"/>
+    <word content="word_7"/>
+    <word content="word_8"/>
+    <word content="word_9"/>
+    <word content="word_10"/>
+    <word content="word_11"/>
+    <word content="word_12"/>
+    <word content="word_13"/>
+    <word content="word_14"/>
+    <word content="word_15"/>
+    <word content="word_16"/>
+    <word content="word_17"/>
+    <word content="word_18"/>
+    <word content="word_19"/>
+    <word content="word_20"/>
+    <word content="word_21"/>
+    <word content="word_22"/>
+    <word content="word_23"/>
+    <word content="word_24"/>
+    <word content="word_25"/>
+
+    <room
+            id="-10"
+            title="someRoom"
+            password="qwerty"
+    />
+
+    <card
+            id="7" word="word_1" role="1" selected="true" cover="2" room_id="-10"
+    />
+    <card
+            id="8" word="word_4" role="2" selected="false" cover="1" room_id="-10"
+    />
+</dataset>
