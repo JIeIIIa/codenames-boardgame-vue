@@ -72,6 +72,8 @@ class WordServiceImplTest {
         void success() {
             //Given
             String expected = "someWord";
+            Word expectedWord = new Word();
+            expectedWord.setContent(expected);
             Page<Word> page = (Page<Word>) mock(Page.class);
             when(page.hasContent()).thenReturn(true);
             when(wordJpaRepository.count()).thenReturn(1L);
@@ -82,7 +84,7 @@ class WordServiceImplTest {
             Set<Word> word = wordService.randomWords(1);
 
             //Then
-            assertThat(word).containsExactly(new Word(expected));
+            assertThat(word).containsExactly(expectedWord);
             verify(wordJpaRepository, times(1)).count();
             verify(wordJpaRepository, times(1)).findAll(any(PageRequest.class));
             verifyNoMoreInteractions(wordJpaRepository);
