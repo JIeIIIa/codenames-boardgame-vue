@@ -1,38 +1,13 @@
 package com.gmail.onishchenko.oleksii.codenames.entity;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
+import com.gmail.onishchenko.oleksii.codenames.source.DataSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CardBuilderTest {
-    static LongStream longs() {
-        return ThreadLocalRandom.current().longs(5, 1, Long.MAX_VALUE);
-    }
-    
-    static IntStream integers() {
-        return ThreadLocalRandom.current().ints(5, 1, Integer.MAX_VALUE);
-    }
-
-    static Stream<String> strings() {
-        return Stream.of(
-                "first",
-                "second",
-                "value",
-                "Awesome String"
-        );
-    }
-
-    static Stream<Role> roles() {
-        return Stream.of(Role.CIVILIAN, Role.RED, Role.BLUE, Role.KILLER);
-    }
+class CardBuilderTest implements DataSource {
 
     @ParameterizedTest(name = "[{index}] ==> id = ''{0}''")
     @MethodSource(value = {"longs"})
@@ -99,13 +74,5 @@ class CardBuilderTest {
         //Then
         assertThat(card.getRoom()).isEqualTo(room);
         assertThat(card).isEqualToIgnoringGivenFields(new Card(), "room");
-    }
-
-    @Test
-    void equals() {
-        EqualsVerifier.forClass(Card.class)
-                .usingGetClass()
-                .withPrefabValues(Room.class, new Room("this", "password"), new Room("another", "password"))
-                .verify();
     }
 }

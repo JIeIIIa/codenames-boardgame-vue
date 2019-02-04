@@ -45,7 +45,7 @@ public class WordServiceImpl implements WordService {
                 .map(i -> wordJpaRepository.findAll(PageRequest.of(i, 1)))
                 .peek(page -> {
                     if (!page.hasContent()) {
-                        throw new WordNotFoundException();
+                        throw new WordNotFoundException("Failure finding the random word");
                     }
                 })
                 .map(Slice::getContent)

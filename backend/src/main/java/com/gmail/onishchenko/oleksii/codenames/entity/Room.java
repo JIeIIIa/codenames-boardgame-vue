@@ -44,6 +44,12 @@ public class Room implements Serializable {
         card.setRoom(null);
     }
 
+    public void removeAllCards() {
+        for (int i = cards.size() - 1; i >= 0; i--) {
+            removeCard(cards.get(i));
+        }
+    }
+
     public Long getId() {
         return id;
     }

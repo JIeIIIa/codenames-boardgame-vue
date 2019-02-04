@@ -93,7 +93,7 @@ public class RoomServiceImpl implements RoomService {
             throw new CodenamesException("roles.size() not equals to words.size()");
         }
 
-        room.getCards().forEach(room::removeCard);
+        room.removeAllCards();
 
         for (int i = 0; i < words.size(); i++) {
             Card card = CardBuilder.getInstance()
