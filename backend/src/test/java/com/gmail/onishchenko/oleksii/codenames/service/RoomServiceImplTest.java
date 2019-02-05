@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -62,6 +64,25 @@ class RoomServiceImplTest {
         //Then
         assertThat(result).hasSize(2)
                 .containsExactlyInAnyOrder(firstDto, secondDto);
+    }
+
+    @Test
+    void findAllAsRooms() {
+        //Given
+        final Room first = new Room();
+        first.setId(7L);
+        first.setTitle("first");
+        final Room second = new Room();
+        second.setId(8L);
+        second.setTitle("second");
+        when(roomJpaRepository.findAll()).thenReturn(asList(first, second));
+
+        //When
+        List<Room> result = roomService.findAllAsRooms();
+
+        //Then
+        assertThat(result).hasSize(2)
+                .containsExactlyInAnyOrder(first, second);
     }
 
     @Nested
@@ -169,6 +190,7 @@ class RoomServiceImplTest {
             void success() {
                 //Given
                 Room room = new Room();
+                room.setDateModified(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
                 Set<Word> words = IntStream.rangeClosed(1, CARDS_COUNT).boxed()
                         .map(String::valueOf)
                         .map(Word::new)
@@ -190,6 +212,10 @@ class RoomServiceImplTest {
                 assertThat(cards.stream().map(Card::getWord).map(Word::new).collect(Collectors.toList()))
                         .containsExactlyInAnyOrder(words.toArray(new Word[0]));
                 assertThat(cards).filteredOn(c -> !c.getSelected()).hasSize(CARDS_COUNT);
+                assertThat(room.getDateModified()).isBetween(
+                        LocalDateTime.now().minus(100, ChronoUnit.MILLIS),
+                        LocalDateTime.now().plus(100, ChronoUnit.MILLIS)
+                );
                 verify(wordService, times(1)).randomWords(eq(CARDS_COUNT));
                 verify(roomJpaRepository, times(1)).saveAndFlush(any(Room.class));
                 verifyNoMoreInteractions(roomJpaRepository, wordService);
@@ -239,9 +265,10 @@ class RoomServiceImplTest {
         void success() {
             //Given
             Room room = new Room();
+            room.setDateModified(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
             List<Card> cards = LongStream.rangeClosed(1, CARDS_COUNT).boxed()
                     .map(i -> CardBuilder.getInstance()
-                            .id(i).word("word" + i).selected(false).role(Role.CIVILIAN).cover((int) (2*i))
+                            .id(i).word("word" + i).selected(false).role(Role.CIVILIAN).cover((int) (2 * i))
                             .build()
                     )
                     .peek(room::addCard)
@@ -262,6 +289,10 @@ class RoomServiceImplTest {
             assertThat(result).isEqualTo(expected);
             assertThat(room.getCards()).filteredOn(c -> c.getId() == 3L && c.getSelected()).hasSize(1);
             assertThat(room.getCards()).filteredOn(c -> c.getId() != 3L && !c.getSelected()).hasSize(CARDS_COUNT - 1);
+            assertThat(room.getDateModified()).isBetween(
+                    LocalDateTime.now().minus(100, ChronoUnit.MILLIS),
+                    LocalDateTime.now().plus(100, ChronoUnit.MILLIS)
+            );
             verify(roomJpaRepository, times(1)).findById(eq(7L));
             verifyNoMoreInteractions(roomJpaRepository, wordService);
         }
@@ -307,6 +338,7 @@ class RoomServiceImplTest {
             //Given
             final long roomId = 7L;
             Room room = new Room("qwerty", "password");
+            room.setDateModified(LocalDateTime.now().minus(1, ChronoUnit.DAYS));
             room.setId(roomId);
             List<Card> cards = asList(
                     CardBuilder.getInstance().id(101L).word("word_1").role(Role.RED).cover(2).room(room).build(),
@@ -322,9 +354,23 @@ class RoomServiceImplTest {
 
             //Then
             assertThat(result).hasSize(2).containsOnlyOnce(expected);
+            assertThat(room.getDateModified()).isBetween(
+                    LocalDateTime.now().minus(100, ChronoUnit.MILLIS),
+                    LocalDateTime.now().plus(100, ChronoUnit.MILLIS)
+            );
             verify(roomJpaRepository, times(1)).findById(eq(roomId));
             verifyNoMoreInteractions(roomJpaRepository, wordService);
         }
+    }
+
+    @Test
+    void deleteRoomSuccess() {
+        //When
+        roomService.deleteRoomById(7L);
+
+        //Then
+        verify(roomJpaRepository, times(1)).deleteById(7L);
+        verifyNoMoreInteractions(roomJpaRepository, wordService);
     }
 
     @Test

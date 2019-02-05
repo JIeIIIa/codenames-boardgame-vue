@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "codenames.rooms.lifetime-minutes",
+      "type": "java.lang.Integer",
+      "description": "Max lifetime in minutes for a room without any query."
+    }
+  ]
+}

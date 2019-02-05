@@ -3,6 +3,7 @@ package com.gmail.onishchenko.oleksii.codenames.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +26,8 @@ public class Room implements Serializable {
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Card> cards = new ArrayList<>();
+
+    private LocalDateTime dateModified;
 
     public Room() {
     }
@@ -82,6 +85,14 @@ public class Room implements Serializable {
         this.cards = cards;
     }
 
+    public LocalDateTime getDateModified() {
+        return dateModified;
+    }
+
+    public void setDateModified(LocalDateTime dateModified) {
+        this.dateModified = dateModified;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,12 +100,13 @@ public class Room implements Serializable {
         Room room = (Room) o;
         return Objects.equals(title, room.title) &&
                 Objects.equals(password, room.password) &&
-                Objects.equals(cards, room.cards);
+                Objects.equals(cards, room.cards) &&
+                Objects.equals(dateModified, room.dateModified);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, password, cards);
+        return Objects.hash(title, password, cards, dateModified);
     }
 
     @Override
@@ -103,6 +115,7 @@ public class Room implements Serializable {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", cards=" + cards +
+                ", dateModified=" + dateModified +
                 '}';
     }
 }

@@ -197,4 +197,13 @@ class RoomServiceImplIT {
         //Then
         assertThat(result).hasSize(2).containsOnlyOnce(expectedCardDto, expectedAnotherCardDto);
     }
+
+    @Test
+    @DatabaseSetup(value = "classpath:datasets/RoomService/room_with_cards_dataset.xml")
+    @ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED,
+            value = "classpath:datasets/RoomService/room_with_cards_after_deleted_dataset.xml")
+    void deleteRoomSuccess() {
+        //When
+        instance.deleteRoomById(-10L);
+    }
 }
