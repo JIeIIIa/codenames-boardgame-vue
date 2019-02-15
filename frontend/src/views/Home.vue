@@ -1,8 +1,6 @@
 <template>
   <div class="row justify-content-center">
-    <div class="col-11 text-center py-2 text-primary">
-      <img class="img-fluid w-100" src="@/assets/title.png" alt="codenames">
-    </div>
+    <Caption/>
 
     <div class="col-7 m-3">
       <router-link to="/rooms" class="btn btn-info d-block">Выбор игры</router-link>
@@ -16,12 +14,12 @@
 
 <script>
   // @ is an alias to /src
-  import HelloWorld from '@/components/HelloWorld.vue'
+  import Caption from '@/components/Caption.vue'
 
   export default {
     name: 'home',
     components: {
-      HelloWorld
+      Caption
     }
   }
 </script>
