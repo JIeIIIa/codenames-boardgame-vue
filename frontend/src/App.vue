@@ -1,29 +1,20 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+  <div id="app" class="container-fluid">
     <router-view/>
   </div>
 </template>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  [v-cloak] {
+    display: none;
   }
-}
+
+  body {
+    min-height: 100vh;
+    background-color: #fdc830; /* fallback for old browsers */
+    background: -webkit-radial-gradient(ellipse at center, #fdc830, #f37335); /* Chrome 10-25, Safari 5.1-6 */
+    background: radial-gradient(ellipse at center, #fdc830, #f37335); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: url("assets/background.jpg") no-repeat center center fixed;
+    background-size: cover;
+  }
 </style>
