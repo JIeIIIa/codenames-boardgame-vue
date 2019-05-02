@@ -1,15 +1,27 @@
 <template>
-  <div class="col-11 text-center py-2 text-primary">
-    <img class="img-fluid w-100" src="@/assets/title.png" alt="codenames">
+  <div class="row justify-content-center mb-2">
+    <div class="col-11 text-primary text-center">
+      <router-link to="/">
+        <img class="img-fluid w-100 caption" src="@/assets/title.png" alt="codenames">
+      </router-link>
+    </div>
   </div>
 </template>
 
 <script>
-    export default {
-        name: "Caption"
-    }
+  import Menu from "./Menu";
+
+  export default {
+    components: {Menu},
+    name: "Caption"
+  }
 </script>
 
 <style scoped>
-
+  .bg-black {
+    background: #000;
+  }
+  .menu {
+    height: 0;
+  }
 </style>
