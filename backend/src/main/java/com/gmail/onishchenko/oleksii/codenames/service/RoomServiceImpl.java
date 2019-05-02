@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -136,14 +137,16 @@ public class RoomServiceImpl implements RoomService {
         return CardDto.toDto(card);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<CardDto> retrieveCards(Long roomId) {
         log.traceEntry("Retriving cards for room with id = {}", roomId);
         return roomJpaRepository.findById(roomId)
                 .map(this::updateDateModified)
                 .map(Room::getCards)
-                .map(cards -> cards.stream().map(CardDto::toDto).collect(Collectors.toList()))
+                .map(cards -> cards.stream()
+                        .sorted(Comparator.comparing(Card::getId))
+                        .map(CardDto::toDto).collect(Collectors.toList()))
                 .orElseThrow(() -> new RoomNotFoundException("Room with id = " + roomId + " not found"));
     }
 
