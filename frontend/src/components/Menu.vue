@@ -81,13 +81,13 @@
 <style scoped lang="scss">
   .menu-img {
     position: relative;
-    transform: rotate(-5deg);
+    transform: rotate(-5deg) scale(0.95, 0.95);
     transition-duration: 300ms;
     z-index: 0;
     top: -80%;
 
     &:hover {
-      transform: rotate(0deg);
+      transform: rotate(0deg) scale(0.95, 0.95);
       transition-duration: 300ms;
       z-index: 900;
       top: -5%;
