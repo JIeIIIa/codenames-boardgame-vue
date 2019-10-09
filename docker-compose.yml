@@ -1,0 +1,47 @@
+version: '3.6'
+
+services:
+  db:
+    container_name: sample_db
+    image: postgres:9.5
+    volumes:
+      - sample_db:/var/lib/postgresql/data
+    expose:
+      - 5432
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=codenames
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      - codenames_network
+  backend:
+    depends_on:
+      - db
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    expose:
+      - 8080
+    environment:
+      - JDBC_DATABASE_URL=jdbc:postgresql://db:5432/codenames
+      - PORT=8080
+    networks:
+      - codenames_network
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8090:80"
+    networks:
+      - codenames_network
+volumes:
+  sample_db:
+networks:
+  codenames_network:
+    driver: bridge
