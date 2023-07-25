@@ -91,11 +91,11 @@ public class Card implements Serializable {
                 role == card.role &&
                 Objects.equals(selected, card.selected) &&
                 Objects.equals(cover, card.cover) &&
-                Objects.equals(room, card.room);
+                Objects.equals(getRoom(), card.getRoom());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(word, role, selected, cover, room);
+        return Objects.hash(word, role, selected, cover, getRoom());
     }
 }
