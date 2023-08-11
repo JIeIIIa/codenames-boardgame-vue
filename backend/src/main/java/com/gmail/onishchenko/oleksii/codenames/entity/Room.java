@@ -100,13 +100,13 @@ public class Room implements Serializable {
         Room room = (Room) o;
         return Objects.equals(title, room.title) &&
                 Objects.equals(password, room.password) &&
-                Objects.equals(cards, room.cards) &&
+                Objects.equals(getCards(), room.getCards()) &&
                 Objects.equals(dateModified, room.dateModified);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, password, cards, dateModified);
+        return Objects.hash(title, password, getCards(), dateModified);
     }
 
     @Override
